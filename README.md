@@ -1,11 +1,12 @@
-# Implementation and validation of an Oxygen Exchange model coupled with multiple physics
+# A multi-physics oxygenation model: from biological derivation to the numerical simulation of real-life scenarios
+Master thesis of **Computational Science and Computational Learning** - Mathematical Engineering, A.Y. 2021-2022
+
+## Implementation and validation of an Oxygen Exchange model coupled with multiple physics
 Project of course **Advanced Programming for Scientific Computing** @ *PoliMi, A.A. 2021/2022*
 
-- Manfred Nesti (manfred.nesti@mail.polimi.it)
-- Teresa Babini (teresa.babini@mail.polimi.it)
+Manfred Nesti (manfred.nesti@mail.polimi.it)
 
 ## Code
 
 The software was implemented in `lifex`, a high‐performance `C++` Finite Element library used for cardiac applications. The software was available in [`lifex` website](https://lifex.gitlab.io/#home) where you can find the first release. The documentation is available [here](https://lifex.gitlab.io/lifex/classlifex_1_1OxygenExchangeAbstract.html).
 
-<img src='https://g.gravizo.com/svg?digraph%20lifex%20%7B%0A%20%20rankdir%3DLR%3B%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Fapps%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Fexamples%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Ftests%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Fdata%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Fmesh%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Fscripts%22%0A%20%20%22%2FLifex%22%20-%3E%20%22%2Flifex%22%0A%20%20%20%20subgraph%20cluster_scripts%20%7B%0A%20%20%20%20label%20%3D%22%2Fscripts%22%0A%20%20%20%20%22%2Fscripts%22-%3E%22%2Fpython%22%3B%0A%20%20%20%20edge%20%5Bstyle%20%3D%20dashed%5D%0A%20%20%20%20%22%2Fpython%22-%3E%22lifex_calibration_perfusion_oxygen_exchange.py%22%3B%0A%20%20%7D%0A%20%20edge%20%5Bstyle%20%3D%20dashed%5D%0A%20%20subgraph%20cluster_apps%7B%0A%20%20%20%20label%20%3D%22%2Fapps%22%0A%20%20%20%20%22%2Fapps%22%20-%3E%20%22%2Foxygen_exchange%22%3B%0A%20%20%7D%0A%20%20subgraph%20cluster_examples%20%7B%0A%20%20%20%20label%20%3D%22%2Fexamples%22%0A%20%20%20%20%22%2Fexamples%22-%3E%22%2Fperfusion_oxygen_exchange%22%3B%0A%20%20%7D%0A%20%20%22%2Fphysics%22-%3E%22oxygen_exchange.hpp%2F.cpp%22%3B%0A%20%20%22%2Fphysics%22-%3E%22perfusion.hpp%2F.cpp%22%3B%0A%20%20%22%2Fphysics%22-%3E%22darcy.hpp%2F.cpp%22%3B%0A%20%20subgraph%20cluster_physics%7B%0A%20%20label%20%3D%22%2Fphysics%22%0A%20%20edge%20%5Bstyle%20%3D%20dotted%2C%20constraint%20%3D%20false%5D%0A%20%20%22perfusion.hpp%2F.cpp%22-%3E%22oxygen_exchange.hpp%2F.cpp%22%3B%0A%20%20edge%20%5Bstyle%20%3D%20dotted%2C%20constraint%20%3D%20false%2C%20dir%20%3D%20%22both%22%2C%20label%20%3D%22%20%22%5D%0A%20%20%22perfusion.hpp%2F.cpp%22-%3E%22darcy.hpp%2F.cpp%22%3B%0A%20%20%7D%0A%20%20edge%5Bstyle%20%3D%20normal%5D%0A%20%20subgraph%20cluster_lifex%20%7B%0A%20%20%20%20label%20%3D%22%2Flifex%22%0A%20%20%20%20%22%2Flifex%22-%3E%20%22%2Fcore%22%3B%0A%20%20%20%20%22%2Flifex%22-%3E%20%22%2Fphysics%22%3B%0A%20%20%20%20%22%2Flifex%22-%3E%20%22%2Futils%22%3B%0A%20%20%7D%0A%7D'>
