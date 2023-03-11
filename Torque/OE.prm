@@ -1,0 +1,2110 @@
+# Listing of Parameters
+# ---------------------
+subsection Example heart perfusion
+  subsection Boundary conditions
+    # Velocity profile file filename.
+    set Velocity profile filename  = ./csv_files/normalized_velocity_profile_800_ms.csv
+
+    # Flow rate peak at the right inlet boundary [m^3/s].
+    set Peak left inlet flow rate  = 1.14e-6
+
+    # Flow rate peak at the right inlet boundary [m^3/s].
+    set Peak right inlet flow rate = 8.6e-7
+
+    # Venous return gamma*p_{drain} [1/s].
+    set Venous return              = 0.29925 # default: 0.3
+
+
+    subsection Fluid dynamics domain
+      # Tag of the left coronary inlet boundary.
+      set Left inlet tag        = 11
+
+      # Tag of the right coronary inlet boundary.
+      set Right inlet tag       = 12
+
+      # Tag of the wall boundary.
+      set Wall tag              = 1
+
+      # Tag of the zero flow outlet boundary
+      set Zero flow outlet tags = 5, 13
+    end
+
+    subsection Darcy domain
+      # Tag of the wall boundary.
+      set Wall tag = 200
+    end
+
+  end
+
+  subsection Coupling conditions
+    # Coupling map filename.
+    set Coupling map filename = ./csv_files/zy_coupling_map.csv
+  end
+
+end
+
+
+subsection Perfusion
+  subsection Iterative solver
+    # Max number of iterations of iterative perfusion problem.
+    set Maximum number of iterations = 20
+
+    # Tolerance of iterative perfusion problem.
+    set Tolerance                    = 1e-3
+
+    # Relaxation factor for the solution.
+    set Relaxation factor            = 1
+  end
+
+  subsection Physical constants and models
+    # Available options are: Darcy Linear | Darcy Nonlinear.
+    set Darcy model            = Darcy Linear
+
+    # Available options are: Navier-Stokes | Network.
+    set Coronaries model       = Navier-Stokes
+
+    # Enable/disable coupling with oxygen exchange model.
+    set Oxygen exchange model  = true
+
+    # Enable/disable coupling with network flow model.
+    set Network flow model     = false
+
+    # Read alpha from CSV file
+    set Read alpha             = true
+
+    # Read perfusion regions from file
+    set Read perfusion regions = true
+
+
+    subsection Alpha data
+      # Alpha coefficient [m^3 * s^{-1} * Pa^{-1}].
+      set Alpha coefficient = 1.0
+    end
+
+    subsection Alpha file
+      # Name of alpha file
+      set Alpha filename = ./csv_files/zy_alpha.csv
+    end
+
+    subsection Perfusion regions file
+      # Name of perfusion regions file
+      set Perfusion regions filename = ./../../../../Tesi/zygote/vtk_preprocess/zy_region_tag/zy_bv_region_tag_array
+    end
+
+  end
+
+  subsection Output
+    # CSV filename.
+    set CSV filename         = perfusion.csv
+
+    # Bool for log residuals of the physics
+    set Enable log residuals = true
+  end
+
+end
+
+
+subsection Fluid dynamics
+  subsection Mesh and space discretization
+    # Available options are: File | Hypercube | Cylinder | Channel with
+    # cylinder.
+    set Mesh type                = File
+
+    # Specify whether the input mesh has hexahedral or tetrahedral elements.
+    # Tetrahedral meshes can only be imported from file.
+    # Available options are: Hex | Tet.
+    set Element type             = Tet
+
+    # Number of global mesh refinement steps applied to the initial grid.
+    # Ignored if restart is enabled.
+    set Number of refinements    = 0
+
+    # Degree of the velocity FE space.
+    set Velocity FE space degree = 1
+
+    # Degree of the pressure FE space.
+    set Pressure FE space degree = 1
+
+
+    subsection File
+      # Mesh file.
+      set Filename       = ./../../../../Tesi/zygote/vtp_vtu_msh_files/zy_coronaries_mesh_tet.msh
+
+      # Mesh scaling factor: 1e-3 => from [mm] to [m].
+      set Scaling factor = 1e-3
+    end
+
+    subsection Hypercube
+      # Left endpoint.
+      set Left     = 0
+
+      # Right endpoint.
+      set Right    = 1
+
+      # Colorize boundary IDs.
+      set Colorize = true
+    end
+
+    subsection Cylinder
+      # Cylinder radius [m].
+      set Radius           = 0.01
+
+      # Cylinder length [m].
+      set Length           = 0.1
+
+      # Number of slices along the cylinder axis.
+      set Number of slices = 3
+    end
+
+    subsection Channel with cylinder
+      # Width of the layer of shells around the cylinder [m].
+      set Shell region width = 0.03
+
+      # Number of shells in the shell layer [-].
+      set Number of shells   = 2
+
+      # Parameter controlling how close the shells are to the cylinder.
+      set Skewness           = 2.0
+
+      # Colorize boundary IDs.
+      set Colorize           = true
+    end
+
+  end
+
+  subsection Physical constants and models
+    # Viscosity [Pa * s].
+    set Viscosity                  = 3.5e-3
+
+    # Density [kg * m^{-3}].
+    set Density                    = 1.06e3
+
+    # Treatment of the Navier-Stokes diffusive term.
+    # Available options are: SymGrad-Grad | Grad-Grad | SymGrad-SymGrad.
+    set Diffusion term formulation = Grad-Grad
+  end
+
+  subsection Volume tags
+    # A comma-separated list of labels for volume-tagged regions whose volume
+    # is to be computed over time. The regions are identified by the tags
+    # below.
+    set Labels       =
+
+    # A list-of-lists specifying for each volume in "Labels of volume-tagged
+    # regions" the corresponding material IDs. For example: 1 2 3, 4 5
+    # indicates that tags 1, 2 and 3 correspond to the first volume while tags
+    # 4 and 5 correspond to the second.
+    set Material IDs =
+  end
+
+  subsection Control volumes
+    # For each control volume, toggle computation of average velocity.
+    set Compute average velocity              =
+
+    # Toggle exporting in the XDMF/H5 files the signed distance from control
+    # volumes.
+    set Output control volume signed distance = false
+
+    # Types of control volumes. Sphere | File.
+    set Type                                  = Sphere
+
+    # Labels used to identify the control volumes
+    set Labels                                =
+
+
+    subsection Sphere
+      # Coordinates of the centers of the control volumes [m].
+      set Centers =
+
+      # Radii of the control volumes [m].
+      set Radii   =
+    end
+
+    subsection File
+      # VTP files to read the control volumes from.
+      set Filenames =
+    end
+
+  end
+
+  subsection Backflow stabilization
+    # Toggle activation of the backflow stabilization.
+    set Active                                         = false
+
+    # Neumann boundary tags where the backflow stabilization must be applied.
+    set Tags of backflow stabilized Neumann boundaries =
+
+    # Coefficient beta for the backflow stabilization
+    set Beta                                           = 1.0
+  end
+
+  subsection Stabilization and turbulence models
+    # Available options are: None | SUPG | VMS-LES | Sigma LES.
+    set Model                                = SUPG
+
+    # Available options are: Quasi-static | Dynamic.
+    set SUPG-VMS-LES fine-scale modeling     = Quasi-static
+
+    # Available options are: Soft | Hard.
+    set Semi-implicit VMS-LES formulation    = Soft
+
+    # Available options are: Metric-tensors | Cell-diameter.
+    set Stabilization parameters computation = Metric-tensors
+
+    # Coefficient multiplying all stabilization terms
+    set Constant factor                      = 1.0
+
+
+    subsection Sigma LES
+      # Coefficient multiplying the Sigma LES term.
+      set Sigma LES constant factor = 1.5
+
+      # Average mesh element size [m].
+      set Sigma LES filter width    = 0.001
+    end
+
+  end
+
+  subsection Compute boundary flowrates
+    # Tags of boundaries where to compute the outgoing flowrate.
+    set Boundary tags   = 1, 11, 12
+
+    # Labels for the boundaries: used to name columns in output CSV file.
+    set Boundary labels = wall, left_cor_in, right_cor_in
+  end
+
+  subsection Compute average boundary pressures
+    # Tags of boundaries where to compute the average pressure.
+    set Boundary tags   = 11, 12
+
+    # Labels for the boundaries: used to name columns in output CSV file.
+    set Boundary labels = left_cor_in, right_cor_in
+  end
+
+  subsection Resistive Immersed Implicit Surface
+    # Toggle activation of the RIIS term.
+    set Active                                   = false
+
+    # Toggle use of surface velocity (if false, quasi-static approximation
+    # u_Gamma=0).
+    set Use surface velocity                     = true
+
+    # Toggle assembling flow-induced RIIS stress.
+    set Assemble RIIS stress                     = false
+
+    # Toggle exporting flow-induced RIIS stress.
+    set Enable output of RIIS stress             = false
+
+    # Perform interpolation of surface distance functions and use enclosures
+    # to cut out spurious effects. If left to false, the surfaces are
+    # displaced following the displacement vectors specified in Displacement
+    # vectors.
+    set Use enclosures                           = false
+
+    # Use unsigned distance, instead of signed one, when assembling the
+    # smeared Dirac delta of the RIIS factor.
+    set Use unsigned distance in assembly        = false
+
+    # If "Use enclosures" is false, toggles movement of immersed surfaces with
+    # the ALE displacement of the fluid domain.
+    set Move surfaces with ALE                   = false
+
+    # Labels used to identify the surfaces in the output.
+    set Surface labels                           = surface
+
+    # Files basenames (no extension) for the immersed surfaces.
+    set Immersed surfaces basenames              = surface
+
+    # The half-thickness of the smooth Dirac function, one for each RIIS term
+    # [m].
+    set Epsilons                                 = 0.001
+
+    # Factor multiplying epsilon when the surface is in open configuration
+    # (only if not using enclosures).
+    set Epsilons factors in open configuration   = 1.0
+
+    # Factor multiplying epsilon when the surface is in closed configuration
+    # (only if not using enclosures).
+    set Epsilons factors in closed configuration = 1.0
+
+    # The resistances of the RIIS terms [kg * m^{-1} * s^{-1}].
+    set Resistances                              = 1000
+
+    # For each surface, toggle on-off behavior.
+    set On-off behavior                          = false
+
+    # Name of the displacement fields stored in the immersed surface files.
+    set Displacement names                       = dVecGamma0
+
+    # For each immersed surface, the configuration of its input VTP file: Open
+    # | Closed.
+    set Input configurations                     = Open
+
+    # Initial immersed surfaces configurations, for each surface: Open |
+    # Closed.
+    set Initial configurations                   = Open
+
+
+    subsection Enclosures
+      # Files names for the enclosures.
+      set Enclosures filenames                               = enclosure.vtp
+
+      # If this values nt1, nt2, ... are > 0, the immersed surfaces filenames
+      # are going to be <basename1>0.vtp, ... <basename1><nt1>.vtp,
+      # <basename2>0.vtp, ... <basename2><nt2>.vtp, ...
+      set Number of time instances for the immersed surfaces = 1
+
+      # Available options are: linear | splines | Fourier.
+      set Interpolation mode for signed distance             = splines
+
+      # Only for splines mode. If true, impose zero derivative at both time
+      # ends; if false, derivative is computed from data.
+      set Zero spline ends derivative                        = true
+    end
+
+    subsection Displacement law
+      # Displacement law for immersed surface: Prescribed | Flow driven |
+      # ModelKS | Model0D.
+      set Displacement laws             = Prescribed
+
+      # For the Prescribed and Flow driven displacement laws, shapes of the
+      # opening and closing ramps. Linear | Cosine | Exponential |
+      # CosineExponential
+      set Ramp shapes                   = Cosine
+
+      # Coefficient for Exponential and CosineExponential ramp shapes, for the
+      # Prescribed and Flow driven displacement laws.
+      set Ramp exponential coefficients = -3.0
+
+
+      subsection Prescribed
+        # Starting first ramp time [s].
+        set First ramp: start time  = 0.10
+
+        # Ending first ramp time [s].
+        set First ramp: end time    = 0.11
+
+        # Starting second ramp time [s].
+        set Second ramp: start time = 0.20
+
+        # Ending second ramp time [s].
+        set Second ramp: end time   = 0.21
+      end
+
+      subsection Flow driven
+        # Time required to go from closed to open configuration [s].
+        set Duration of the opening ramp = 1e-3
+
+        # Time required to go from open to closed configuration [s].
+        set Duration of the closing ramp = 1e-3
+
+        # How the closing of the valve is triggered. Volume derivative means
+        # that the valve is closed based on a condition on the flow rate.
+        # Prescribed closes the valve at a specified time.
+        # Available options are: Volume derivative | Pressure jump |
+        # Prescribed.
+        set Closing law                  = Volume derivative
+
+
+        subsection Volume derivative closing
+          # For each immersed surface, the volume compartment whose derivative
+          # must be checked to trigger the closing of the valve.
+          set Volume compartments              =
+
+          # For each immersed surface, the expected direction of the flow
+          # through it, when in open configuration. When the derivative of the
+          # associated volume compartment has opposite sign to the flow
+          # direction specified here, the closing of the valve is triggered.
+          set Flow direction through the valve =
+        end
+
+        subsection Prescribed closing
+          # Immersed surface closing: start time [s] (if immersed surface
+          # closing explicitly set is true).
+          set Closing start times =
+        end
+
+      end
+
+      subsection Valve 0D model
+        # Scaling factor for density in the 0D valve model
+        set Density scaling factor   = 1.0
+
+        # Damping coefficient for the single leaflet [s^-1].
+        set Damping                  = 1e-2
+
+        # [s^-2].
+        set Elasticity               = 1e-2
+
+        # [m^-1].
+        set Add to initial curvature = 0.0
+      end
+
+      subsection Valve KS model
+        # If true, pressure jump is taken from control volumes (cf.
+        # Upwind/Downwind control volumes filenames); if false, RIIS-based
+        # stress jump is computed.
+        set Pressure jump from control volumes = true
+        set Flowrate tag                       = 2
+        set theta min                          = 0.0872665
+        set theta max                          = 1.309
+        set kf                                 = 50
+        set kp                                 = 733273.1
+        set kv                                 = 7
+        set kb                                 = 2
+      end
+
+    end
+
+    subsection Orifice area computation
+      # Filenames for the planes over which to compute orifice area.
+      set Valve planes filenames =
+
+      # Toggle computation of orifice areas of surfaces. If enabled, a valve
+      # plane must be provided for each surface.
+      set Compute orifice areas  = false
+    end
+
+    subsection Control volumes
+      # Labels of control volumes upwind to the surfaces. These must have been
+      # defined in the Control volumes section of Fluid dynamics parameters.
+      set Upwind control volume labels   =
+
+      # Labels of control volumes downwind to the surfaces. These must have
+      # been defined in the Control volumes section of Fluid dynamics
+      # parameters.
+      set Downwind control volume labels =
+
+      # Toggle the use of control volumes for computing upwind and downwind
+      # pressures for immersed surfaces. If enabled, lists of upwind and
+      # downwind control volumes must be provided, one for each surface. It is
+      # required by the pressure jump displacement law.
+      set Enable control volumes         = false
+    end
+
+    subsection Output
+      # Enable/disable output of immersed vtp files.
+      set Enable surface output                = false
+
+      # Enable/disable output of L2-projected normals and curvatures of
+      # immersed surfaces.
+      set Enable normals and curvatures output = false
+    end
+
+  end
+
+  subsection Arbitrary Lagrangian Eulerian
+    # Toggle activation of the ALE formulation.
+    set Active                                   = false
+
+    # Toggle assembly of time-derivative rhs on old mesh: int_{Omega_old}
+    # u_BDF . v / dt.
+    set Assemble time-derivative rhs on old mesh = true
+
+    # Toggle import from a .vtp file. If false, a displacement Function should
+    # be given in the code.
+    set Import displacement from file            = false
+
+    # Toggle initializing the displacement and the mesh, so that the initial
+    # mesh conforms to the initial displacement.
+    set Initialize displacement                  = true
+
+    # Toggle the storage of the mesh in output files (if false, only the
+    # initial mesh is exported).
+    set Export mesh at every output              = false
+
+    # Available options are: Total | Incremental.
+    set Displacement mode                        = Total
+
+    # Imported displacement is scaled by this factor.
+    set Displacement scaling factor              = 1
+
+
+    subsection Input file
+      # Polygonal surface filename with the definition of the displacements on
+      # the boundary.
+      # If empty, displacement must be implemented as a Function in the code.
+      set Boundary displacements filename      =
+
+      # Basename of the displacement fields on the boundary.
+      # If Boundary displacements filename is empty, this param is neglected.
+      set Boundary displacement field basename =
+
+      # Number of figures to represent the time index used in the field name
+      # (e.g. 2 in the case displacement00, displacement01, ...).
+      set Number of figures for the index      = 0
+
+      # First index of the input time-dependent boundary displacement. (e.g.
+      # 00 for "displacement00".
+      set Initial index                        = 0
+
+      # Number of time subintervals of the input time-dependent boundary
+      # displacement.
+      set Time subintervals                    = 0
+
+      # Stride between two consecutive time indices of a subinterval (e.g. 3
+      # for displacement00, displacement03, displacement06, ...).
+      set Time indices stride                  = 1
+
+      # [s]. Time interval between two consecutive time instances of the input
+      # time-dependent displacement, including stride (if, e.g., stride=2,
+      # this is the total time between displacement00 and displacement02).
+      set Time subinterval duration            = 0
+
+      # Toggle time interpolation of all imported displacements (all imported
+      # at the beginning of the simulation). If false, a piecewise linear
+      # interpolation is used.
+      set Use time interpolation               = false
+
+      # Available options are: splines | Fourier.
+      set Interpolation mode                   = splines
+
+      # Only for splines mode. If true, impose zero derivative at both time
+      # ends; if false, derivative is computed from data.
+      set Zero spline ends derivative          = true
+
+      # If true, the time interpolation is periodic and the period can be set
+      # in the time solver. If false, the time interpolation is performed in
+      # the whole time domain, even if a periodic simulation is run (for
+      # instance in terms of BCs).
+      set Periodic interpolation               = true
+    end
+
+    subsection Lifting
+      # Differential model for the lifting.
+      # Available options are: Harmonic | Linear elasticity.
+      set Lifting operator           = Harmonic
+
+      # Boundary tags for the portions of the boundary where to lift data
+      # from.
+      set Tags Dirichlet             =
+
+      # If true, the lifting problem will always be solved on the input mesh;
+      # otherwise, the lifting problem will be solved on the moved mesh.
+      set Always solve on input mesh = true
+
+
+      subsection Jacobian-based stiffening
+        # Toggle jacobian-based stiffening.
+        set Enable                                = false
+
+        # If true, the stiffening is based on the jacobian of the deformed
+        # mesh. Otherwise, it is based on that of the input, undeformed mesh.
+        # This parameter must be false if Always solve on input mesh = false.
+        set Use jacobian in current configuration = true
+
+        # Reference jacobian value [m3].
+        set J0                                    = 1e-9
+
+        # Stiffening power [-].
+        set chi                                   = 1.0
+      end
+
+      subsection Linear solver
+        set Maximum number of iterations = 1000
+        # Tolerance for the absolute l2 residual norm.
+        set Tolerance                    = 1e-10
+
+        # Reduction factor w.r.t. initial linear solver residual. If 0, then
+        # only the absolute residual norm is checked as a stopping criterion.
+        set Reduction                    = 0
+
+        # Log each iteration step, use 'Log frequency' for skipping steps.
+        set Log history                  = false
+
+        # Set logging frequency when 'Log history' is enabled.
+        set Log frequency                = 1
+
+        # Available options are: BiCGStab | CG | GMRES.
+        set Solver type                  = CG
+
+
+        subsection GMRES
+          # Toggle using right or left preconditioning.
+          set Right preconditioning               = true
+
+          # The number of iterations before restart.
+          set Maximum number of temporary vectors = 1000
+          set Use default residual                = true
+
+          # Force re-orthogonalization of orthonormal basis in every step; if
+          # false, the solver automatically checks for loss of orthogonality
+          # every 5 iterations.
+          set Force re-orthogonalization          = false
+        end
+
+        subsection BiCGStab
+          # Toggle using exact linear system residual or an estimate.
+          set Exact residual = true
+
+          # A threshold telling which numbers are considered zero.
+          set Breakdown      = 1e-10
+        end
+
+      end
+
+      subsection Preconditioner
+        # Determine which preconditioner to use.
+        # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+        set Preconditioner type = AMG
+
+
+        subsection AMG parameters
+          # Optimization for elliptic problem.
+          set Elliptic              = true
+
+          # Optimization for higher order elements.
+          set Higher order elements = false
+
+          # Number of multigrid cycles.
+          set N-cycles              = 1
+
+          # Use of W-cycle instead of a V-cycle.
+          set W-cycle               = false
+
+          # Dropping threshold in aggregation.
+          set Aggregation threshold = 1e-4
+
+          # Specify the constant modes of the matrix.
+          set Constant modes        = false
+
+          # Number of the sweeps of the smoother.
+          set Smoother sweeps       = 2
+
+          # Number of the overlap in the error smoother.
+          set Smoother overlap      = 0
+
+          # Determines which smoother to use for the AMG cycle.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Smoother type         = Chebyshev
+
+          # Determines which solver to use on the coarsest level.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Coarse type           = Amesos-KLU
+
+          # Flag to print AMG details.
+          set Output details        = false
+        end
+
+        subsection AdditiveSchwarz parameters
+          # Solver to be used on subdomains.
+          # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+          # ILUT.
+          set Inner solver = SOR
+
+          # Overlap between subdomains.
+          set Overlap      = 0
+
+
+          subsection SOR, SSOR, BlockSOR and BlockSSOR
+            # Size of the blocks (BlockSOR and BlockSSOR only).
+            set Block size       = 1
+
+            # Over-relaxation parameter.
+            set Omega            = 1.0
+
+            # Minimum diagonal value.
+            set Min diagonal     = 0.0
+
+            # Number of sweeps per preconditioner application.
+            set Number of sweeps = 1
+          end
+
+          subsection ILU and ILUT
+            # Fill-in level.
+            set Fill               = 0
+
+            # Threshold below which values are removed from the factorization
+            # (ILUT only).
+            set Drop threshold     = 0.0
+
+            # Absolute threshold.
+            set Absolute threshold = 0.0
+
+            # Relative threshold.
+            set Relative threshold = 1.0
+          end
+
+        end
+
+      end
+
+      subsection Linear elasticity
+        # Young modulus [Pa].
+        set Young modulus   = 1
+
+        # Poisson modulus [-].
+        set Poisson modulus = 0.25
+      end
+
+    end
+
+    subsection Output
+      # Enable/disable output.
+      set Enable output                 = true
+
+      # Name of the exported total displacement variable (not exported if
+      # empty).
+      set Total displacement name       =
+
+      # Name of the exported incremental displacement variable (not exported
+      # if empty).
+      set Incremental displacement name =
+
+      # Name of the exported ALE velocity variable (not exported if empty).
+      set Velocity                      =
+
+      # Enable/disable output of input vtp files, if provided.
+      set Enable surface output         = false
+    end
+
+  end
+
+  subsection Time solver
+    # BDF order.
+    set BDF order                = 1
+
+    # Available options are: Implicit | Semi-implicit.
+    set Non-linearity treatment  = Semi-implicit
+
+    # Initial time [s].
+    set Initial time             = 0
+
+    # Final time [s].
+    set Final time               = 3.2
+
+    # Time step [s].
+    set Time step                = 1e-3
+
+    # Toggle starting the simulation from results of a previous run.
+    set Restart                  = false
+
+    # If restart is enabled, specify the timestep k to import the solution
+    # from.
+    set Restart initial timestep = 0
+
+    # If restart is enabled, specify the basename to be imported.
+    set Restart basename         = solution
+
+    # If restart is enabled, specify the input file to recover initial volumes
+    # from.
+    set Input CSV filename       =
+
+    # Period [s].
+    set Period                   = 3.2
+  end
+
+  subsection Non-linear solver
+    # If true, the following parameters will be ignored: the max. number of
+    # iterations will implicitly be set to 1 and tolerances to 0.
+    set Linearized                   = true
+    set Maximum number of iterations = 50
+    set Absolute residual tolerance  = 1e-8
+    set Relative residual tolerance  = 1e-8
+    set Relative increment tolerance = 1e-10
+
+    # Assemble Jacobian every n-th iteration.
+    set Jacobian assembly lag        = 1
+
+    # Acceleration scheme to be used for relaxation.
+    # Available options are: None | Aitken acceleration | Anderson
+    # acceleration | Static relaxation.
+    set Acceleration scheme          = None
+
+
+    subsection Fixed point
+      subsection Relaxation
+        subsection Aitken acceleration
+          # Relaxation coefficient used for the first two fixed-point
+          # iterations.
+          set Initial relaxation = 1.0
+        end
+
+        subsection Anderson acceleration
+          # Number of previous iterations used to compute the next one.
+          set Number of steps = 3
+
+          # Relaxation parameter.
+          set Relaxation      = 1.0
+        end
+
+        subsection Static relaxation
+          # Relaxation coefficient.
+          set Relaxation coefficient = 0.25
+        end
+
+      end
+
+    end
+
+  end
+
+  subsection Linear solver
+    set Maximum number of iterations = 1000
+    # Tolerance for the absolute l2 residual norm.
+    set Tolerance                    = 1e-10
+
+    # Reduction factor w.r.t. initial linear solver residual. If 0, then only
+    # the absolute residual norm is checked as a stopping criterion.
+    set Reduction                    = 0
+
+    # Log each iteration step, use 'Log frequency' for skipping steps.
+    set Log history                  = false
+
+    # Set logging frequency when 'Log history' is enabled.
+    set Log frequency                = 1
+
+    # Available options are: BiCGStab | GMRES.
+    set Solver type                  = GMRES
+
+
+    subsection GMRES
+      # Toggle using right or left preconditioning.
+      set Right preconditioning               = true
+
+      # The number of iterations before restart.
+      set Maximum number of temporary vectors = 1000
+      set Use default residual                = true
+
+      # Force re-orthogonalization of orthonormal basis in every step; if
+      # false, the solver automatically checks for loss of orthogonality every
+      # 5 iterations.
+      set Force re-orthogonalization          = false
+    end
+
+    subsection BiCGStab
+      # Toggle using exact linear system residual or an estimate.
+      set Exact residual = true
+
+      # A threshold telling which numbers are considered zero.
+      set Breakdown      = 1e-10
+    end
+
+  end
+
+  subsection Preconditioner
+    # Available options are: Mp | PCD | SIMPLE.
+    set Preconditioner = SIMPLE
+
+
+    subsection Inverse of F
+      # Determine which preconditioner to use.
+      # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+      set Preconditioner type = AMG
+
+
+      subsection AMG parameters
+        # Optimization for elliptic problem.
+        set Elliptic              = false
+
+        # Optimization for higher order elements.
+        set Higher order elements = false
+
+        # Number of multigrid cycles.
+        set N-cycles              = 1
+
+        # Use of W-cycle instead of a V-cycle.
+        set W-cycle               = false
+
+        # Dropping threshold in aggregation.
+        set Aggregation threshold = 1e-4
+
+        # Specify the constant modes of the matrix.
+        set Constant modes        = false
+
+        # Number of the sweeps of the smoother.
+        set Smoother sweeps       = 10
+
+        # Number of the overlap in the error smoother.
+        set Smoother overlap      = 0
+
+        # Determines which smoother to use for the AMG cycle.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Smoother type         = ML Gauss-Seidel
+
+        # Determines which solver to use on the coarsest level.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Coarse type           = Amesos-KLU
+
+        # Flag to print AMG details.
+        set Output details        = false
+      end
+
+      subsection AdditiveSchwarz parameters
+        # Solver to be used on subdomains.
+        # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+        # ILUT.
+        set Inner solver = SOR
+
+        # Overlap between subdomains.
+        set Overlap      = 0
+
+
+        subsection SOR, SSOR, BlockSOR and BlockSSOR
+          # Size of the blocks (BlockSOR and BlockSSOR only).
+          set Block size       = 1
+
+          # Over-relaxation parameter.
+          set Omega            = 1.0
+
+          # Minimum diagonal value.
+          set Min diagonal     = 0.0
+
+          # Number of sweeps per preconditioner application.
+          set Number of sweeps = 1
+        end
+
+        subsection ILU and ILUT
+          # Fill-in level.
+          set Fill               = 0
+
+          # Threshold below which values are removed from the factorization
+          # (ILUT only).
+          set Drop threshold     = 0.0
+
+          # Absolute threshold.
+          set Absolute threshold = 0.0
+
+          # Relative threshold.
+          set Relative threshold = 1.0
+        end
+
+      end
+
+    end
+
+    subsection Inverse of Schur complement (SIMPLE only)
+      # Determine which preconditioner to use.
+      # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+      set Preconditioner type = AMG
+
+
+      subsection AMG parameters
+        # Optimization for elliptic problem.
+        set Elliptic              = false
+
+        # Optimization for higher order elements.
+        set Higher order elements = false
+
+        # Number of multigrid cycles.
+        set N-cycles              = 1
+
+        # Use of W-cycle instead of a V-cycle.
+        set W-cycle               = false
+
+        # Dropping threshold in aggregation.
+        set Aggregation threshold = 1e-4
+
+        # Specify the constant modes of the matrix.
+        set Constant modes        = false
+
+        # Number of the sweeps of the smoother.
+        set Smoother sweeps       = 10
+
+        # Number of the overlap in the error smoother.
+        set Smoother overlap      = 0
+
+        # Determines which smoother to use for the AMG cycle.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Smoother type         = ML Gauss-Seidel
+
+        # Determines which solver to use on the coarsest level.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Coarse type           = Amesos-KLU
+
+        # Flag to print AMG details.
+        set Output details        = false
+      end
+
+      subsection AdditiveSchwarz parameters
+        # Solver to be used on subdomains.
+        # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+        # ILUT.
+        set Inner solver = SOR
+
+        # Overlap between subdomains.
+        set Overlap      = 0
+
+
+        subsection SOR, SSOR, BlockSOR and BlockSSOR
+          # Size of the blocks (BlockSOR and BlockSSOR only).
+          set Block size       = 1
+
+          # Over-relaxation parameter.
+          set Omega            = 1.0
+
+          # Minimum diagonal value.
+          set Min diagonal     = 0.0
+
+          # Number of sweeps per preconditioner application.
+          set Number of sweeps = 1
+        end
+
+        subsection ILU and ILUT
+          # Fill-in level.
+          set Fill               = 0
+
+          # Threshold below which values are removed from the factorization
+          # (ILUT only).
+          set Drop threshold     = 0.0
+
+          # Absolute threshold.
+          set Absolute threshold = 0.0
+
+          # Relative threshold.
+          set Relative threshold = 1.0
+        end
+
+      end
+
+    end
+
+  end
+
+  subsection Output
+    # Enable/disable output of HDF5 files.
+    set Enable output                                  = true
+
+    # Output file.
+    set Filename                                       = solution_fd
+
+    # Save every n timesteps.
+    set Save every n timesteps                         = 25
+
+    # Toogle exporting of CSV file.
+    set Enable CSV output                              = true
+
+    # Toggle exporting of integral fluid properties: total kinetic energy,
+    # total kinetic energy computed with fine-scale velocity, and enstrophy.
+    set Export fluid energies                          = false
+
+    # Export space-averaged stabilization parameters
+    set Export space-averaged stabilization parameters = false
+
+    # Name for the CSV file.
+    set CSV filename                                   = fluid_dynamics.csv
+
+    # CSV is written only once every n timesteps.
+    set Print CSV every n timesteps                    = 1
+
+    # Enable/disable the serialization of the solution for a possible
+    # restart.
+    set Serialize solution                             = false
+
+    # Serialize every n timesteps.
+    set Serialize every n timesteps                    = 1
+  end
+
+end
+
+
+subsection Network Flow
+  subsection Model initialization
+    # Tolerance used on computation of stationary state [s].
+    set Stationary tolerance          = 1e-6
+
+    # Maximum iterations allowed during computation of stationary state.
+    set Stationary maximum iterations = 100
+
+    # Enable/disable acceleration for stationary configuration.
+    set Accelerate stationary         = true
+
+    # Acceleration scheme to be used for relaxation.
+    # Available options are: Aitken acceleration | Anderson acceleration |
+    # Static relaxation.
+    set Acceleration scheme           = Anderson acceleration
+  end
+
+  subsection Time parameters
+    # Initial time [s].
+    set Initial time = 0.0
+
+    # Final time [s].
+    set Final time   = 3.2
+
+    # Time step [s].
+    set Time step    = 1e-3
+
+    # Theta method for time discretization.
+    set Theta        = 1
+  end
+
+  subsection Model parameters
+    # Available options are: NS0D | Poiseuille.
+    set Reduced model      = NS0D
+
+    # Available options are: SI | scaled.
+    set Unit system        = scaled
+
+    # Available options are: Direct | Iterative.
+    set Solver             = Direct
+
+    # Number of segments which compose the network.
+    set Number of segments = 2
+
+    # Comma separated list with all segments in the network. Used as ordering
+    # for parameters.
+    set Segments list      = 0, 1
+
+    # Comma separated inlet segments.
+    set Inlet segments     = 0
+
+    # Comma separated outlet segments.
+    set Outlet segments    = 1
+
+    # Comma separated list of segment groups (space separated). The first
+    # element is the inlet, whereas the rest are the children segments.
+    set Connectivity       = 0 1
+
+    # Comma separated list with length in each segment.
+    set Lengths            = 1e-3, 1e-3
+
+    # Comma separated list with area in each segment.
+    set Areas              = 5e-6, 5e-6
+
+    # Comma separated list with thickness in each segment.
+    set Thicknesses        = 1e-4, 1e-4
+
+    # Comma separated list with alpha in each segment.
+    set Alphas             = 0.5, 0.5
+
+    # Comma separated list with beta in each segment.
+    set Betas              = 0.5, 0.5
+
+    # Fluid density in SI.
+    set Density            = 1060
+
+    # Fluid viscosity in SI.
+    set Viscosity          = 0.03
+
+    # Young modulus in SI.
+    set Young modulus      = 1e5
+
+    # Poisson ratio.
+    set Poisson ratio      = 0.4
+
+    # Areas are writte  [Area factor] x Area
+    set Area factor        = 1
+  end
+
+  subsection Output
+    # Enable/disable output.
+    set Enable output          = true
+
+    # Output directory.
+    set Directory              = ./
+
+    # Output file.
+    set Filename               = network_flow.csv
+
+    # Save every n timesteps.
+    set Save every n timesteps = 25
+  end
+
+  subsection Linear solver
+    set Maximum number of iterations = 1000
+    # Tolerance for the absolute l2 residual norm.
+    set Tolerance                    = 1e-10
+
+    # Reduction factor w.r.t. initial linear solver residual. If 0, then only
+    # the absolute residual norm is checked as a stopping criterion.
+    set Reduction                    = 0
+
+    # Log each iteration step, use 'Log frequency' for skipping steps.
+    set Log history                  = false
+
+    # Set logging frequency when 'Log history' is enabled.
+    set Log frequency                = 1
+
+    # Available options are: BiCGStab | CG | GMRES.
+    set Solver type                  = GMRES
+
+
+    subsection GMRES
+      # Toggle using right or left preconditioning.
+      set Right preconditioning               = true
+
+      # The number of iterations before restart.
+      set Maximum number of temporary vectors = 1000
+      set Use default residual                = true
+
+      # Force re-orthogonalization of orthonormal basis in every step; if
+      # false, the solver automatically checks for loss of orthogonality every
+      # 5 iterations.
+      set Force re-orthogonalization          = false
+    end
+
+    subsection BiCGStab
+      # Toggle using exact linear system residual or an estimate.
+      set Exact residual = true
+
+      # A threshold telling which numbers are considered zero.
+      set Breakdown      = 1e-10
+    end
+
+  end
+
+  subsection Fixed point
+    subsection Relaxation
+      subsection Aitken acceleration
+        # Relaxation coefficient used for the first two fixed-point
+        # iterations.
+        set Initial relaxation = 1.0
+      end
+
+      subsection Anderson acceleration
+        # Number of previous iterations used to compute the next one.
+        set Number of steps = 3
+
+        # Relaxation parameter.
+        set Relaxation      = 1.0
+      end
+
+      subsection Static relaxation
+        # Relaxation coefficient.
+        set Relaxation coefficient = 0.25
+      end
+
+    end
+
+  end
+
+end
+
+
+subsection Darcy
+  subsection Mesh and space discretization
+    # Available options are: File | Hypercube.
+    set Mesh type             = File
+
+    # Specify whether the input mesh has hexahedral or tetrahedral elements.
+    # Tetrahedral meshes can only be imported from file.
+    # Available options are: Hex | Tet.
+    set Element type          = Hex
+
+    # Number of global mesh refinement steps applied to the initial grid.
+    # Ignored if restart is enabled.
+    set Number of refinements = 0
+
+
+    subsection File
+      # Mesh file.
+      set Filename       = ./../../../../Tesi/zygote/vtp_vtu_msh_files/zy_biventricle_mesh_hex.msh
+
+      # Mesh scaling factor: 1e-3 => from [mm] to [m].
+      set Scaling factor = 1e-3
+    end
+
+    subsection Hypercube
+      # Left endpoint.
+      set Left     = 0
+
+      # Right endpoint.
+      set Right    = 1
+
+      # Colorize boundary IDs.
+      set Colorize = true
+    end
+
+  end
+
+  subsection Time solver
+    # Initial time.
+    set Initial time = 0
+
+    # Final time.
+    set Final time   = 3.2
+
+    # Time step.
+    set Time step    = 1e-3
+  end
+
+  subsection Physical constants and models
+    # Number of compartments.
+    set Number of compartments = 3
+
+    # Read permeabilities from vtu file
+    set Read permeabilities    = true
+
+    # Gamma coefficients [s^{-1} * Pa^{-1}].
+    set Gamma coefficients     = 0.0, 0.0, 1.0e-4
+
+    # Venous pressure [mmHg].
+    set Venous pressure        = 2992.5 # default: 22.5
+
+    # Read beta from vtu file
+    set Read beta              = true
+
+
+    subsection Permeability data
+      # Available options are: Scalar | Tensor.
+      set Permeability coefficient = Scalar
+
+      # A 3x3 tensor (as list of 9 elements delimited by " ") for each
+      # compartment (delimited by ",") [m^2 * s^{-1} * Pa^{-1}].
+      set Tensor permeabilities    = 2.0 1.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0, 2.0 1.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0, 2.0 1.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0
+
+      # A scalar for each compartment [m^2 * s^{-1} * Pa^{-1}].
+      set Scalar permeabilities    = 1.0, 1.0, 1.0
+    end
+
+    subsection Permeability file
+      # Name of permeability arrays
+      set Permeability file names = ./../../../../Tesi/zygote/vtk_preprocess/zy_perm0/zy_bv_perm0, ./../../../../Tesi/zygote/vtk_preprocess/zy_perm1/zy_bv_perm1, ./../../../../Tesi/zygote/vtk_preprocess/zy_perm2/zy_bv_perm2
+    end
+
+    subsection Beta data
+      # Beta coefficients [s^{-1} * Pa^{-1}].
+      set Beta coefficients = 0 1 1, 0 2 0, 1 2 1
+    end
+
+    subsection Beta file
+      # Name of beta array
+      set Beta file names = 0 1 ./../../../../Tesi/zygote/vtk_preprocess/zy_beta0/zy_bv_beta0, 0 2 NULL, 1 2 ./../../../../Tesi/zygote/vtk_preprocess/zy_beta1/zy_bv_beta1
+    end
+
+  end
+
+  subsection Output
+    # Enable/disable output.
+    set Enable output          = true
+
+    # Output file.
+    set Filename               = darcy_solution
+
+    # Save every n timesteps.
+    set Save every n timesteps = 25
+  end
+
+  subsection Darcy linear
+    subsection Mesh and space discretization
+      # Degree of the pressure FE space.
+      set FE space degree = 1
+    end
+
+    subsection Linear solver
+      set Maximum number of iterations = 1000
+      # Tolerance for the absolute l2 residual norm.
+      set Tolerance                    = 1e-10
+
+      # Reduction factor w.r.t. initial linear solver residual. If 0, then
+      # only the absolute residual norm is checked as a stopping criterion.
+      set Reduction                    = 0
+
+      # Log each iteration step, use 'Log frequency' for skipping steps.
+      set Log history                  = false
+
+      # Set logging frequency when 'Log history' is enabled.
+      set Log frequency                = 1
+
+      # Available options are: BiCGStab | CG | GMRES.
+      set Solver type                  = CG
+
+
+      subsection GMRES
+        # Toggle using right or left preconditioning.
+        set Right preconditioning               = true
+
+        # The number of iterations before restart.
+        set Maximum number of temporary vectors = 1000
+        set Use default residual                = true
+
+        # Force re-orthogonalization of orthonormal basis in every step; if
+        # false, the solver automatically checks for loss of orthogonality
+        # every 5 iterations.
+        set Force re-orthogonalization          = false
+      end
+
+      subsection BiCGStab
+        # Toggle using exact linear system residual or an estimate.
+        set Exact residual = true
+
+        # A threshold telling which numbers are considered zero.
+        set Breakdown      = 1e-10
+      end
+
+    end
+
+    subsection Block preconditioner
+      # Available options are: None | Jacobi | Gauss-Seidel | Gauss-Seidel
+      # symmetric.
+      set Block solver type = Jacobi
+
+
+      subsection Diagonal block parameters
+        # Determine which preconditioner to use.
+        # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+        set Preconditioner type = AMG
+
+
+        subsection AMG parameters
+          # Optimization for elliptic problem.
+          set Elliptic              = true
+
+          # Optimization for higher order elements.
+          set Higher order elements = false
+
+          # Number of multigrid cycles.
+          set N-cycles              = 1
+
+          # Use of W-cycle instead of a V-cycle.
+          set W-cycle               = false
+
+          # Dropping threshold in aggregation.
+          set Aggregation threshold = 1e-4
+
+          # Specify the constant modes of the matrix.
+          set Constant modes        = false
+
+          # Number of the sweeps of the smoother.
+          set Smoother sweeps       = 5
+
+          # Number of the overlap in the error smoother.
+          set Smoother overlap      = 0
+
+          # Determines which smoother to use for the AMG cycle.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Smoother type         = ML Gauss-Seidel
+
+          # Determines which solver to use on the coarsest level.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Coarse type           = Amesos-KLU
+
+          # Flag to print AMG details.
+          set Output details        = false
+        end
+
+        subsection AdditiveSchwarz parameters
+          # Solver to be used on subdomains.
+          # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+          # ILUT.
+          set Inner solver = SOR
+
+          # Overlap between subdomains.
+          set Overlap      = 0
+
+
+          subsection SOR, SSOR, BlockSOR and BlockSSOR
+            # Size of the blocks (BlockSOR and BlockSSOR only).
+            set Block size       = 1
+
+            # Over-relaxation parameter.
+            set Omega            = 1.0
+
+            # Minimum diagonal value.
+            set Min diagonal     = 0.0
+
+            # Number of sweeps per preconditioner application.
+            set Number of sweeps = 1
+          end
+
+          subsection ILU and ILUT
+            # Fill-in level.
+            set Fill               = 0
+
+            # Threshold below which values are removed from the factorization
+            # (ILUT only).
+            set Drop threshold     = 0.0
+
+            # Absolute threshold.
+            set Absolute threshold = 0.0
+
+            # Relative threshold.
+            set Relative threshold = 1.0
+          end
+
+        end
+
+      end
+
+    end
+
+  end
+
+  subsection Darcy nonlinear
+    subsection Mesh and space discretization
+      # Degree of the mass FE space.
+      set Mass FE space degree = 1
+    end
+
+    subsection Mechanics input
+      # Enable/disable the use of a serialized mechanics solution.
+      set Read mechanics      = false
+
+      # Finite element degree of the serialized mechanics.
+      set Mechanics FE degree = 1
+
+      # Name of mechanics solution without numbers. It is assumed to have
+      # _xxxx after the name for each timestep xxxx.
+      set Mechanics filename  = mechanics_solution
+
+      # Timestep used by the mechanics solver.
+      set Mechanics timestep  = 1e-3
+
+      # Duration of a heartbeat in the pre-computed mechancis simulation
+      set Period              = 0.8
+
+      # Amount of periods to skip
+      set Periods skipped     = 1
+    end
+
+    subsection Physical constants and models
+      # Initial porosity in each compartment [1].
+      set Initial spatial porosities    = 0.019, 0.043
+
+      # Initial Lagrangian porosity in each compartment [1].
+      set Initial Lagrangian porosities = 0.019, 0.043
+      set Fluid density                 = 1060
+
+      # Available options are: Bruinsma | BruinsmaChapelle | BruinsmaPow.
+      set Energy functional             = BruinsmaChapelle
+    end
+
+    subsection Linear solver
+      set Maximum number of iterations = 1000
+      # Tolerance for the absolute l2 residual norm.
+      set Tolerance                    = 1e-10
+
+      # Reduction factor w.r.t. initial linear solver residual. If 0, then
+      # only the absolute residual norm is checked as a stopping criterion.
+      set Reduction                    = 0
+
+      # Log each iteration step, use 'Log frequency' for skipping steps.
+      set Log history                  = false
+
+      # Set logging frequency when 'Log history' is enabled.
+      set Log frequency                = 1
+
+      # Available options are: CG | GMRES.
+      set Solver type                  = CG
+
+
+      subsection GMRES
+        # Toggle using right or left preconditioning.
+        set Right preconditioning               = true
+
+        # The number of iterations before restart.
+        set Maximum number of temporary vectors = 1000
+        set Use default residual                = true
+
+        # Force re-orthogonalization of orthonormal basis in every step; if
+        # false, the solver automatically checks for loss of orthogonality
+        # every 5 iterations.
+        set Force re-orthogonalization          = false
+      end
+
+    end
+
+    subsection Non-linear solver
+      # If true, the following parameters will be ignored: the max. number of
+      # iterations will implicitly be set to 1 and tolerances to 0.
+      set Linearized                   = false
+      set Maximum number of iterations = 50
+      set Absolute residual tolerance  = 1e-8
+      set Relative residual tolerance  = 1e-8
+      set Relative increment tolerance = 1e-10
+
+      # Assemble Jacobian every n-th iteration.
+      set Jacobian assembly lag        = 1
+
+      # Acceleration scheme to be used for relaxation.
+      # Available options are: None | Aitken acceleration | Anderson
+      # acceleration | Static relaxation.
+      set Acceleration scheme          = None
+
+
+      subsection Fixed point
+        subsection Relaxation
+          subsection Aitken acceleration
+            # Relaxation coefficient used for the first two fixed-point
+            # iterations.
+            set Initial relaxation = 1.0
+          end
+
+          subsection Anderson acceleration
+            # Number of previous iterations used to compute the next one.
+            set Number of steps = 3
+
+            # Relaxation parameter.
+            set Relaxation      = 1.0
+          end
+
+          subsection Static relaxation
+            # Relaxation coefficient.
+            set Relaxation coefficient = 0.25
+          end
+
+        end
+
+      end
+
+    end
+
+    subsection Block preconditioner
+      # Available options are: None | Jacobi | Gauss-Seidel | Gauss-Seidel
+      # symmetric.
+      set Block solver type = Jacobi
+
+
+      subsection Diagonal block parameters
+        # Determine which preconditioner to use.
+        # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+        set Preconditioner type = AMG
+
+
+        subsection AMG parameters
+          # Optimization for elliptic problem.
+          set Elliptic              = false
+
+          # Optimization for higher order elements.
+          set Higher order elements = false
+
+          # Number of multigrid cycles.
+          set N-cycles              = 1
+
+          # Use of W-cycle instead of a V-cycle.
+          set W-cycle               = false
+
+          # Dropping threshold in aggregation.
+          set Aggregation threshold = 1e-4
+
+          # Specify the constant modes of the matrix.
+          set Constant modes        = false
+
+          # Number of the sweeps of the smoother.
+          set Smoother sweeps       = 2
+
+          # Number of the overlap in the error smoother.
+          set Smoother overlap      = 0
+
+          # Determines which smoother to use for the AMG cycle.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Smoother type         = ML Gauss-Seidel
+
+          # Determines which solver to use on the coarsest level.
+          # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+          # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+          # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+          # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+          # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined
+          # | SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU
+          # | ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+          set Coarse type           = Amesos-KLU
+
+          # Flag to print AMG details.
+          set Output details        = false
+        end
+
+        subsection AdditiveSchwarz parameters
+          # Solver to be used on subdomains.
+          # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+          # ILUT.
+          set Inner solver = SOR
+
+          # Overlap between subdomains.
+          set Overlap      = 0
+
+
+          subsection SOR, SSOR, BlockSOR and BlockSSOR
+            # Size of the blocks (BlockSOR and BlockSSOR only).
+            set Block size       = 1
+
+            # Over-relaxation parameter.
+            set Omega            = 1.0
+
+            # Minimum diagonal value.
+            set Min diagonal     = 0.0
+
+            # Number of sweeps per preconditioner application.
+            set Number of sweeps = 1
+          end
+
+          subsection ILU and ILUT
+            # Fill-in level.
+            set Fill               = 0
+
+            # Threshold below which values are removed from the factorization
+            # (ILUT only).
+            set Drop threshold     = 0.0
+
+            # Absolute threshold.
+            set Absolute threshold = 0.0
+
+            # Relative threshold.
+            set Relative threshold = 1.0
+          end
+
+        end
+
+      end
+
+    end
+
+    subsection Volumetric Energy
+      # Reference pressure in each compartment in [Pa].
+      set Reference pressures = 3000, 3000, 3000
+
+
+      subsection Bruinsma
+        # q1 [Pa].
+        set q1 = 1.333, 22
+
+        # q2 [Pa].
+        set q2 = 550.612, 1009
+
+        # q3 [1].
+        set q3 = 45, 10
+
+        # q4 [Pa].
+        set q4 = 1e3
+
+        # q5 [1].
+        set q5 = 20
+      end
+
+      subsection BruinsmaChapelle
+        # q1 [Pa].
+        set q1 = 1.333, 22
+
+        # q2 [Pa].
+        set q2 = 550.612, 1009
+
+        # q3 [1].
+        set q3 = 45, 10
+
+        # q4 [Pa].
+        set q4 = 5e4
+      end
+
+      subsection BruinsmaPow
+        # q1 [Pa].
+        set q1 = 1.333, 22
+
+        # q2 [Pa].
+        set q2 = 550.612, 1009
+
+        # q3 [1].
+        set q3 = 45, 10
+
+        # q4 [Pa].
+        set q4 = 1
+
+        # q5 [1].
+        set q5 = 1
+      end
+
+    end
+
+  end
+
+end
+
+
+subsection Oxygen Exchange 3D
+  # Initial time [s].
+  set Initial time = 0.0
+
+  # Final time [s].
+  set Final time   = 3.2
+
+  # Time step [s].
+  set Time step    = 1e-3
+
+
+  subsection Physical parameters
+    # Available options are: Constant | Michaelis-Menten.
+    set Muscle consumption dynamics      = Michaelis-Menten
+
+    # PO2 muscle [Pa] (5320 Pa = 40 mmHg: at rest; 2660 Pa = 20 mmHg: physical
+    # activity).
+    set PO2 muscle                       = 5320.0
+
+    # PO2 muscle initial [Pa] (5320 Pa = 40 mmHg: at rest; 2660 Pa = 20 mmHg:
+    # physical activity).
+    set PO2 muscle initial               = 5320.0
+
+    # PO2 initial [Pa]PO2 initial [Pa]
+    set PO2 initial                      = 6650.0
+
+    # SO2 arterial [1].
+    set SO2 arterial                     = 0.98
+
+    # PO2_50 [Pa].
+    set PO2_50                           = 3551.1
+
+    # O2 binding to any Hb [1].
+    set Number of cooperation            = 3.2
+
+    # Henry constant O2 [Pa / (mol/m^3)].
+    set Henry constant for O2            = 96105.8
+
+    # [Hb*] [mol/m^3].
+    set Concentration of total Hb        = 10.0
+
+    # k- [s^-1].
+    set Coefficient k minus              = 100.0
+
+    # Effective permeability [s^-1].
+    set Effective permeability           = 2.0
+
+    # Volume fraction of each compartment [1].
+    set Volume fraction                  = 3e-3
+
+    # Muscle maximum consumption rate [Pa/s].
+    set Muscle constant consumption rate = 2394.0
+
+    # Muscle maximum consumption rate [Pa/s].
+    set Muscle maximum consumption rate  = 6650.0
+
+    # Muscle consumption rate PO2_50 [Pa/s].
+    set Muscle consumption rate PO2_50   = 5320.0
+
+    # Diffusion coefficient of [O2*] to be tuned [m^2 s^-1].
+    set Diffusion coefficient            = 1e-1
+  end
+
+  subsection Flux
+    # Heartbeat period [s].
+    set Heartbeat period = 0.8
+
+    # Flux duration [s].
+    set Flux duration    = 0.6
+
+    # Flux magnitude [s^-1].
+    set Flux magnitude   = 0.05
+  end
+
+  subsection Lookup table
+    # Initial PO2 [Pa].
+    set Initial PO2 = 0
+
+    # Final PO2 [Pa].
+    set Final PO2   = 39900
+
+    # Step PO2 [Pa].
+    set Step PO2    = 1.0
+  end
+
+  subsection Output
+    # Enable/disable output.
+    set Enable output          = true
+
+    # Output file.
+    set Filename               = oxygen_exchange
+
+    # Save every n timesteps.
+    set Save every n timesteps = 25
+  end
+
+  subsection Mesh and space discretization
+    # Number of compartments.
+    set Number of compartments = 1
+
+    # Degree of FE space.
+    set FE space degree        = 1
+  end
+
+  subsection Linear solver
+    set Maximum number of iterations = 1000
+    # Tolerance for the absolute l2 residual norm.
+    set Tolerance                    = 1e-10
+
+    # Reduction factor w.r.t. initial linear solver residual. If 0, then only
+    # the absolute residual norm is checked as a stopping criterion.
+    set Reduction                    = 0
+
+    # Log each iteration step, use 'Log frequency' for skipping steps.
+    set Log history                  = false
+
+    # Set logging frequency when 'Log history' is enabled.
+    set Log frequency                = 1
+
+    # Available options are: BiCGStab | CG | GMRES.
+    set Solver type                  = GMRES
+
+
+    subsection GMRES
+      # Toggle using right or left preconditioning.
+      set Right preconditioning               = true
+
+      # The number of iterations before restart.
+      set Maximum number of temporary vectors = 1000
+      set Use default residual                = true
+
+      # Force re-orthogonalization of orthonormal basis in every step; if
+      # false, the solver automatically checks for loss of orthogonality every
+      # 5 iterations.
+      set Force re-orthogonalization          = false
+    end
+
+    subsection BiCGStab
+      # Toggle using exact linear system residual or an estimate.
+      set Exact residual = true
+
+      # A threshold telling which numbers are considered zero.
+      set Breakdown      = 1e-10
+    end
+
+  end
+
+  subsection Block preconditioner
+    # Available options are: None | Jacobi | Gauss-Seidel | Gauss-Seidel
+    # symmetric.
+    set Block solver type = Jacobi
+
+
+    subsection Diagonal block parameters
+      # Determine which preconditioner to use.
+      # Available options are: AMG | BlockJacobi | AdditiveSchwarz.
+      set Preconditioner type = AMG
+
+
+      subsection AMG parameters
+        # Optimization for elliptic problem.
+        set Elliptic              = false
+
+        # Optimization for higher order elements.
+        set Higher order elements = false
+
+        # Number of multigrid cycles.
+        set N-cycles              = 1
+
+        # Use of W-cycle instead of a V-cycle.
+        set W-cycle               = false
+
+        # Dropping threshold in aggregation.
+        set Aggregation threshold = 1e-4
+
+        # Specify the constant modes of the matrix.
+        set Constant modes        = false
+
+        # Number of the sweeps of the smoother.
+        set Smoother sweeps       = 2
+
+        # Number of the overlap in the error smoother.
+        set Smoother overlap      = 0
+
+        # Determines which smoother to use for the AMG cycle.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Smoother type         = Chebyshev
+
+        # Determines which solver to use on the coarsest level.
+        # Available options are: Aztec | IFPACK | Jacobi | ML symmetric
+        # Gauss-Seidel | symmetric Gauss-Seidel | ML Gauss-Seidel |
+        # Gauss-Seidel | block Gauss-Seidel | symmetric block Gauss-Seidel |
+        # Chebyshev | MLS | Hiptmair | Amesos-KLU | Amesos-Superlu |
+        # Amesos-UMFPACK | Amesos-Superludist | Amesos-MUMPS | user-defined |
+        # SuperLU | IFPACK-Chebyshev | self | do-nothing | IC | ICT | ILU |
+        # ILUT | Block Chebyshev | IFPACK-Block Chebyshev.
+        set Coarse type           = Amesos-KLU
+
+        # Flag to print AMG details.
+        set Output details        = false
+      end
+
+      subsection AdditiveSchwarz parameters
+        # Solver to be used on subdomains.
+        # Available options are: SOR | SSOR | BlockSOR | BlockSSOR | ILU |
+        # ILUT.
+        set Inner solver = SOR
+
+        # Overlap between subdomains.
+        set Overlap      = 0
+
+
+        subsection SOR, SSOR, BlockSOR and BlockSSOR
+          # Size of the blocks (BlockSOR and BlockSSOR only).
+          set Block size       = 1
+
+          # Over-relaxation parameter.
+          set Omega            = 1.0
+
+          # Minimum diagonal value.
+          set Min diagonal     = 0.0
+
+          # Number of sweeps per preconditioner application.
+          set Number of sweeps = 1
+        end
+
+        subsection ILU and ILUT
+          # Fill-in level.
+          set Fill               = 0
+
+          # Threshold below which values are removed from the factorization
+          # (ILUT only).
+          set Drop threshold     = 0.0
+
+          # Absolute threshold.
+          set Absolute threshold = 0.0
+
+          # Relative threshold.
+          set Relative threshold = 1.0
+        end
+
+      end
+
+    end
+
+  end
+
+end
